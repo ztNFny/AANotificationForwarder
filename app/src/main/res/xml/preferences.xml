@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/heading_settings">
+
+        <MultiSelectListPreference
+            android:key="@string/pref_appsToForward"
+            android:title="@string/pref_title_appsToForward"
+            android:summary="@string/pref_summary_appsToForward"
+            android:entries="@array/empty"
+            android:entryValues="@array/empty"
+            android:defaultValue="@array/empty" />
+
+        <MultiSelectListPreference
+            android:key="@string/pref_appsAutoDismiss"
+            android:title="@string/pref_title_appsAutoDismiss"
+            android:summary="@string/pref_summary_appsAutoDismiss"
+            android:entries="@array/empty"
+            android:entryValues="@array/empty"
+            android:defaultValue="@array/empty" />
+
+        <SeekBarPreference
+            android:key="@string/pref_dismissInterval"
+            android:title="@string/pref_title_dismissInterval"
+            android:summary="@string/pref_summary_dismissInterval"
+            android:min="@integer/pref_min_dismissInterval"
+            android:max="@integer/pref_max_dismissInterval"
+            android:defaultValue="@integer/pref_default_dismissInterval"
+            app:showSeekBarValue="true" />
+
+    </PreferenceCategory>
+</androidx.preference.PreferenceScreen>

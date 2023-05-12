@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">AA Notification Forwarder</string>
+    <string name="service_name">AA Notification Service</string>
+
+    <!-- Test Notification -->
+    <string name="test_notification_title">Test Notification</string>
+    <string name="test_notification_message">This notification by AA Notification Forwarder should appear on Android Auto if connected.</string>
+    <string name="test_notification_fab">Send test notification</string>
+
+    <!-- Main screen -->
+    <string name="permission_error">Read Notifications permission not granted! Click here to grant it in Settings app.</string>
+    <string name="status_connected">Connected to Android Auto</string>
+    <string name="status_disconnected">Disconnected from Android Auto</string>
+    <string name="heading_settings">Settings</string>
+    <string name="about_text">Version: %1$s\n\nhttps://github.com/ztNFny/AANotificationForwarded</string>
+
+    <!-- Preferences -->
+    <string name="pref_appsToForward">pref_appsToForward</string>
+    <string name="pref_title_appsToForward">Apps to forward</string>
+    <string name="pref_summary_appsToForward">Selected applications notifications will be forwarded to Android Auto</string>
+
+    <string name="pref_appsAutoDismiss">pref_appsAutoDismiss</string>
+    <string name="pref_title_appsAutoDismiss">Apps to dismiss original notification</string>
+    <string name="pref_summary_appsAutoDismiss">Selected applications original notification will be dismissed automatically after forwarding to Android Auto</string>
+
+    <string name="pref_dismissInterval">pref_dismissInterval</string>
+    <string name="pref_title_dismissInterval">Dismiss forwarded notification timeout</string>
+    <string name="pref_summary_dismissInterval">Forwarded notification will be dismissed after X seconds. Only a short timeout should be required for Android Auto to show it, increase in case of problems. 0 = never.</string>
+    <integer name="pref_min_dismissInterval">0</integer>
+    <integer name="pref_max_dismissInterval">60</integer>
+    <integer name="pref_default_dismissInterval">10</integer>
+
+    <string-array name="empty" />
+</resources>

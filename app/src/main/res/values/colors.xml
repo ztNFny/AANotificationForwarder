@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF0FADF5</color>
+    <color name="colorPrimaryDark">#FF0089e0</color>
+    <color name="colorAccent">#FFE05700</color>
+
+    <color name="status_error">#FFF44336</color>
+    <color name="status_disconnected">#FFFFA000</color>
+    <color name="status_connected">#FF388E3C</color>
+</resources>
