@@ -15,6 +15,11 @@ Notifications by configured apps are re-sent by *AA Notification Forwarder* and 
 See [Releases](https://github.com/ztNFny/AANotificationForwarder/releases/new).
 This will NOT be published on Google Play Store as sending non-messanger notifications to AA is not allowed.
 
+### Installation
+On Android 13 sideloaded apps are not able to get notification access by default. Your options:
+- Sideload the app, then go to app settings dialog and enable restricted settings access from overflow menu. (see e.g. [DroidWin](https://droidwin.com/android-13-restricted-settings-for-sideloaded-apps-how-to-bypass/) for more detailed steps)
+- Use apps like King Installer that pretend the app was installed from Play Store
+
 ### Contributions
 Contributions via PR / Issue are welcome
 
