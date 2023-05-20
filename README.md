@@ -17,7 +17,7 @@ This will NOT be published on Google Play Store as sending non-messanger notific
 
 ### Installation
 On Android 13 sideloaded apps are not able to get notification access by default. Your options:
-- Sideload the app, then go to app settings dialog and enable restricted settings access from overflow menu. (see e.g. [DroidWin](https://droidwin.com/android-13-restricted-settings-for-sideloaded-apps-how-to-bypass/) for more detailed steps)
+- Sideload the app, then go to app settings dialog and enable restricted settings access from overflow menu. (see e.g. [Niagara launcher documentation](https://help.niagaralauncher.app/article/134-fix-restricted-settings) or [DroidWin](https://droidwin.com/android-13-restricted-settings-for-sideloaded-apps-how-to-bypass/) for more detailed steps)
 - Use apps like King Installer that pretend the app was installed from Play Store
 
 ### Contributions
