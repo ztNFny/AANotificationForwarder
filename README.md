@@ -7,7 +7,7 @@ AA shows only notifications from messaging apps - but what if you want to get no
 
 Notifications by configured apps are re-sent by *AA Notification Forwarder* and displayed on your cars screen.
 
-### Requirements 
+### Requirements
 - Android 11 or higher
 - Android Auto (duh!)
 
@@ -17,8 +17,13 @@ This will NOT be published on Google Play Store as sending non-messanger notific
 
 ### Installation
 On Android 13 sideloaded apps are not able to get notification access by default. Your options:
-- Sideload the app, then go to app settings dialog and enable restricted settings access from overflow menu. (see e.g. [Niagara launcher documentation](https://help.niagaralauncher.app/article/134-fix-restricted-settings) or [DroidWin](https://droidwin.com/android-13-restricted-settings-for-sideloaded-apps-how-to-bypass/) for more detailed steps)
-- Use apps like King Installer that pretend the app was installed from Play Store
+- Use apps like [King Installer[(https://gitlab.com/annexhack/king-installer) that pretend the app was installed from Play Store
+- Sideload and manually enable restricted settings (workflow might be different on non-stock Androids):
+    1. Sideload the app
+    2. Try to enable notification access and get a "Restricted Setting" dialog
+    3. Go to Settings - Apps - See all apps, find *AA Notification Forwarder* and select it
+    4. In the overflow menu (3 dots in upper right corner) select *Allow restricted settings*
+    5. Enabling notification access should now work.
 
 ### Contributions
 Contributions via PR / Issue are welcome
