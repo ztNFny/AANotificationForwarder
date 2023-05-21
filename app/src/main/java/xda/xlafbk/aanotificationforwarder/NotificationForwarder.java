@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
@@ -20,8 +21,14 @@ public class NotificationForwarder extends NotificationListenerService {
     private final List<String> forwardedNotifications = new ArrayList<>(10);
     private static Set<String> appsToForward = new HashSet<>();
     private static Set<String> appsToDismiss = new HashSet<>();
+    private static Set<String> ignoreNotificationTitle = new HashSet<>();
+    private static boolean debugLogging;
+
+    private static boolean forwardWithoutAndroidAuto;
+    private static boolean ignoreGroupSummaryNotifications;
     private Context context;
     private AutoConnection autoConnectionListener;
+    private String TAG = "AANotificationForwarder";
 
     @Override
     public void onCreate() {
@@ -30,6 +37,10 @@ public class NotificationForwarder extends NotificationListenerService {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         appsToForward = preferences.getStringSet(context.getString(R.string.pref_appsToForward), new HashSet<>());
         appsToDismiss = preferences.getStringSet(context.getString(R.string.pref_appsAutoDismiss), new HashSet<>());
+        ignoreNotificationTitle = Set.of(preferences.getString(context.getString(R.string.pref_ignoreNotificationTitle), "").split(","));
+        ignoreGroupSummaryNotifications = preferences.getBoolean(context.getString(R.string.pref_ignoreGroupSummaryNotifications), false);
+        forwardWithoutAndroidAuto = preferences.getBoolean(context.getString(R.string.pref_forwardWithoutAndroidAuto), false);
+        debugLogging = preferences.getBoolean(context.getString(R.string.pref_debugLogging), false);
 
         // subscribe to Android Auto connection state
         autoConnectionListener = new AutoConnection();
@@ -46,6 +57,22 @@ public class NotificationForwarder extends NotificationListenerService {
         appsToDismiss = newValue;
     }
 
+    public static void setIgnoreNotificationTitle(String newValue) {
+        ignoreNotificationTitle = Set.of(newValue.split(","));
+    }
+
+    public static void setDebugLogging(boolean newValue) {
+        debugLogging = newValue;
+    }
+
+    public static void setForwardWithoutAndroidAuto(boolean newValue) {
+        forwardWithoutAndroidAuto = newValue;
+    }
+
+    public static void setIgnoreGroupSummaryNotifications(boolean newValue) {
+        ignoreGroupSummaryNotifications = newValue;
+    }
+
     @Override
     public void onListenerConnected() {
         super.onListenerConnected();
@@ -59,25 +86,41 @@ public class NotificationForwarder extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         // connected to Android Auto?
-        if (!autoConnectionListener.isConnected()) {
+        if (!autoConnectionListener.isConnected() && !forwardWithoutAndroidAuto) {
+            if (debugLogging) Log.d(TAG, "Ignoring notification as Android Auto is not connected");
+            return;
+        }
+        // FLAG_GROUP_SUMMARY notifications
+        if (ignoreGroupSummaryNotifications && (sbn.getNotification().flags & Notification.FLAG_GROUP_SUMMARY) != 0) {
+            if (debugLogging) Log.d(TAG, "Ignoring FLAG_GROUP_SUMMARY notification");
             return;
         }
         // Package whitelisted?
         if (!appsToForward.contains(sbn.getPackageName())) {
+            if (debugLogging) Log.d(TAG, "Ignoring notification from non-forwarded app");
             return;
         }
         // Has this already been forwarded?
-        String sbnId = sbn.getKey() + sbn.getNotification().when;
+        String sbnId = sbn.getKey() + "_" + sbn.getNotification().when;
         if (forwardedNotifications.contains(sbnId)) {
+            if (debugLogging) Log.d(TAG, "Already notified");
             return;
         }
         forwardedNotifications.add(sbnId);
+        if (debugLogging) Log.d(TAG, "Notification will be forwarded: " + sbnId);
 
         Notification notification = sbn.getNotification();
         Bundle bundle = notification.extras;
 
         String title = bundle.getCharSequence("android.title").toString();
         String text = bundle.containsKey("android.bigText") ? bundle.getCharSequence("android.bigText").toString() : bundle.getCharSequence("android.text", "").toString();
+
+        for (String ignoreString : ignoreNotificationTitle) {
+            if (title.contains(ignoreString)) {
+                if (debugLogging) Log.d(TAG, "Ignore notification as it contains \"" + ignoreString + "\"");
+                return;
+            }
+        }
 
         // Get the best notification icon (large, small, default) and return it as bitmap
         Bitmap notificationIcon = NotificationHelper.getNotificationIconBitmap(context, notification);

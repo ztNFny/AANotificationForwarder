@@ -12,6 +12,7 @@
     <string name="status_connected">Connected to Android Auto</string>
     <string name="status_disconnected">Disconnected from Android Auto</string>
     <string name="heading_settings">Settings</string>
+    <string name="heading_settings_debug">Debug Settings</string>
     <string name="about_text">Version: %1$s\n\nhttps://github.com/ztNFny/AANotificationForwarded</string>
 
     <!-- Preferences -->
@@ -29,6 +30,26 @@
     <integer name="pref_min_dismissInterval">0</integer>
     <integer name="pref_max_dismissInterval">60</integer>
     <integer name="pref_default_dismissInterval">10</integer>
+
+    <string name="pref_ignoreGroupSummaryNotifications">pref_ignoreGroupSummaryNotifications</string>
+    <string name="pref_title_ignoreGroupSummaryNotifications">Ignore "Group Summary" notifications</string>
+    <string name="pref_summary_ignoreGroupSummaryNotifications">Some apps sent 2 notifications for 1 with the second being a group summary notification. Enable to ignore those in case you get duplicate notifications.</string>
+    <bool name="pref_default_ignoreGroupSummaryNotifications">false</bool>
+
+    <string name="pref_ignoreNotificationTitle">pref_ignoreNotificationTitle</string>
+    <string name="pref_title_ignoreNotificationTitle">Ignore notification titles</string>
+    <string name="pref_summary_ignoreNotificationTitle">Ignore notifications if their title contains one of the specified strings. "," to separate multiple texts.</string>
+    <string name="pref_default_ignoreNotificationTitle">First text to ignore,Second text to ignore,Checking Mail</string>
+
+    <string name="pref_forwardWithoutAndroidAuto">pref_forwardWithoutAndroidAuto</string>
+    <string name="pref_title_forwardWithoutAndroidAuto">Forward without Android Auto connected</string>
+    <string name="pref_summary_forwardWithoutAndroidAuto">For testing purposes you might want to have this app forward notifications without Android Auto being connected.</string>
+    <bool name="pref_default_forwardWithoutAndroidAuto">false</bool>
+
+    <string name="pref_debugLogging">pref_debugLogging</string>
+    <string name="pref_title_debugLogging">Debug logging</string>
+    <string name="pref_summary_debugLogging">Enable debug logging to logcat.</string>
+    <bool name="pref_default_debugLogging">false</bool>
 
     <string-array name="empty" />
 </resources>

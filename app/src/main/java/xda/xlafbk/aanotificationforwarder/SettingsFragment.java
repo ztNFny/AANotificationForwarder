@@ -5,6 +5,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.EditTextPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -14,7 +16,6 @@ import java.util.TreeMap;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     TreeMap<String, String> installedApps;
-    MultiSelectListPreference appsToForward;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -22,7 +23,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         installedApps = getInstalledApps(requireContext());
 
-        appsToForward = findPreference(getString(R.string.pref_appsToForward));
+        MultiSelectListPreference appsToForward = findPreference(getString(R.string.pref_appsToForward));
         appsToForward.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setAppsToForward((Set<String>)newValue);
             populateAppsToAutoDismissPref((Set<String>)newValue);
@@ -30,6 +31,28 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
         setMultiSelectListPreferenceValues(appsToForward, installedApps);
         populateAppsToAutoDismissPref(appsToForward.getValues());
+
+        EditTextPreference ignoreNotificationTitle = findPreference(getString(R.string.pref_ignoreNotificationTitle));
+        ignoreNotificationTitle.setOnPreferenceChangeListener((preference, newValue) -> {
+            NotificationForwarder.setIgnoreNotificationTitle((String) newValue);
+            return true;
+        });
+        CheckBoxPreference ignoreGroupSummaryNotifications = findPreference(getString(R.string.pref_ignoreGroupSummaryNotifications));
+        ignoreGroupSummaryNotifications.setOnPreferenceChangeListener((preference, newValue) -> {
+            NotificationForwarder.setIgnoreGroupSummaryNotifications((Boolean) newValue);
+            return true;
+        });
+
+        CheckBoxPreference forwardWithoutAndroidAuto = findPreference(getString(R.string.pref_forwardWithoutAndroidAuto));
+        forwardWithoutAndroidAuto.setOnPreferenceChangeListener((preference, newValue) -> {
+            NotificationForwarder.setForwardWithoutAndroidAuto((Boolean) newValue);
+            return true;
+        });
+        CheckBoxPreference debugLogging = findPreference(getString(R.string.pref_debugLogging));
+        debugLogging.setOnPreferenceChangeListener((preference, newValue) -> {
+            NotificationForwarder.setDebugLogging((Boolean) newValue);
+            return true;
+        });
     }
 
     private void populateAppsToAutoDismissPref(Set<String> values) {

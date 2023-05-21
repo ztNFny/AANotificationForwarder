@@ -20,6 +20,18 @@
             android:entryValues="@array/empty"
             android:defaultValue="@array/empty" />
 
+        <EditTextPreference
+            android:key="@string/pref_ignoreNotificationTitle"
+            android:title="@string/pref_title_ignoreNotificationTitle"
+            android:summary="@string/pref_summary_ignoreNotificationTitle"
+            android:defaultValue="@string/pref_default_ignoreNotificationTitle" />
+
+        <CheckBoxPreference
+            android:key="pref_ignoreGroupSummaryNotifications"
+            android:title="@string/pref_title_ignoreGroupSummaryNotifications"
+            android:summary="@string/pref_summary_ignoreGroupSummaryNotifications"
+            android:defaultValue="@bool/pref_default_ignoreGroupSummaryNotifications" />
+
         <SeekBarPreference
             android:key="@string/pref_dismissInterval"
             android:title="@string/pref_title_dismissInterval"
@@ -29,5 +41,21 @@
             android:defaultValue="@integer/pref_default_dismissInterval"
             app:showSeekBarValue="true" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/heading_settings_debug">
+
+        <CheckBoxPreference
+            android:key="pref_forwardWithoutAndroidAuto"
+            android:title="@string/pref_title_forwardWithoutAndroidAuto"
+            android:summary="@string/pref_summary_forwardWithoutAndroidAuto"
+            android:defaultValue="@bool/pref_default_forwardWithoutAndroidAuto" />
+
+        <CheckBoxPreference
+            android:key="pref_debugLogging"
+            android:title="@string/pref_title_debugLogging"
+            android:summary="@string/pref_summary_debugLogging"
+            android:defaultValue="@bool/pref_default_debugLogging" />
     </PreferenceCategory>
 </androidx.preference.PreferenceScreen>
