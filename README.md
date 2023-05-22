@@ -17,7 +17,7 @@ This will NOT be published on Google Play Store as sending non-messanger notific
 
 ### Installation
 On Android 13 sideloaded apps are not able to get notification access by default. Your options:
-- Use apps like [King Installer[(https://gitlab.com/annexhack/king-installer) that pretend the app was installed from Play Store
+- Use apps like [King Installer](https://gitlab.com/annexhack/king-installer) that pretend the app was installed from Play Store
 - Sideload and manually enable restricted settings (workflow might be different on non-stock Androids):
     1. Sideload the app
     2. Try to enable notification access and get a "Restricted Setting" dialog
