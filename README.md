@@ -12,7 +12,7 @@ Notifications by configured apps are re-sent by *AA Notification Forwarder* and 
 - Android Auto (duh!)
 
 ### Download
-See [Releases](https://github.com/ztNFny/AANotificationForwarder/releases/new).
+See [Releases](https://github.com/ztNFny/AANotificationForwarder/releases/).
 This will NOT be published on Google Play Store as sending non-messanger notifications to AA is not allowed.
 
 ### Installation
