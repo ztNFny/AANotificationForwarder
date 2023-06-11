@@ -12,12 +12,12 @@ Notifications by configured apps are re-sent by *AA Notification Forwarder* and 
 - Android Auto (duh!)
 
 ### Download
-See [Releases](https://github.com/ztNFny/AANotificationForwarder/releases/new).
+See [Releases](https://github.com/ztNFny/AANotificationForwarder/releases/).
 This will NOT be published on Google Play Store as sending non-messanger notifications to AA is not allowed.
 
 ### Installation
 On Android 13 sideloaded apps are not able to get notification access by default. Your options:
-- Use apps like [King Installer[(https://gitlab.com/annexhack/king-installer) that pretend the app was installed from Play Store
+- Use apps like [King Installer](https://gitlab.com/annexhack/king-installer) that pretend the app was installed from Play Store
 - Sideload and manually enable restricted settings (workflow might be different on non-stock Androids):
     1. Sideload the app
     2. Try to enable notification access and get a "Restricted Setting" dialog
