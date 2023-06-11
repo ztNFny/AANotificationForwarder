@@ -32,6 +32,11 @@
             android:summary="@string/pref_summary_ignoreGroupSummaryNotifications"
             android:defaultValue="@bool/pref_default_ignoreGroupSummaryNotifications" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/heading_settings_debug">
+
         <SeekBarPreference
             android:key="@string/pref_dismissInterval"
             android:title="@string/pref_title_dismissInterval"
@@ -40,11 +45,6 @@
             android:max="@integer/pref_max_dismissInterval"
             android:defaultValue="@integer/pref_default_dismissInterval"
             app:showSeekBarValue="true" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/heading_settings_debug">
 
         <CheckBoxPreference
             android:key="pref_forwardWithoutAndroidAuto"
