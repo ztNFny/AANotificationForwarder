@@ -28,7 +28,7 @@ public class NotificationForwarder extends NotificationListenerService {
     private static boolean ignoreGroupSummaryNotifications;
     private Context context;
     private AutoConnection autoConnectionListener;
-    private String TAG = "AANotificationForwarder";
+    private final String TAG = "AANotificationForwarder";
 
     @Override
     public void onCreate() {
@@ -116,7 +116,7 @@ public class NotificationForwarder extends NotificationListenerService {
         String text = bundle.containsKey("android.bigText") ? bundle.getCharSequence("android.bigText").toString() : bundle.getCharSequence("android.text", "").toString();
 
         for (String ignoreString : ignoreNotificationTitle) {
-            if (title.contains(ignoreString)) {
+            if (!ignoreString.isBlank() && title.contains(ignoreString)) {
                 if (debugLogging) Log.d(TAG, "Ignore notification as it contains \"" + ignoreString + "\"");
                 return;
             }
