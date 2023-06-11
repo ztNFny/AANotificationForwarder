@@ -38,9 +38,9 @@ public class NotificationForwarder extends NotificationListenerService {
         appsToForward = preferences.getStringSet(context.getString(R.string.pref_appsToForward), new HashSet<>());
         appsToDismiss = preferences.getStringSet(context.getString(R.string.pref_appsAutoDismiss), new HashSet<>());
         ignoreNotificationTitle = Set.of(preferences.getString(context.getString(R.string.pref_ignoreNotificationTitle), "").split(","));
-        ignoreGroupSummaryNotifications = preferences.getBoolean(context.getString(R.string.pref_ignoreGroupSummaryNotifications), false);
-        forwardWithoutAndroidAuto = preferences.getBoolean(context.getString(R.string.pref_forwardWithoutAndroidAuto), false);
-        debugLogging = preferences.getBoolean(context.getString(R.string.pref_debugLogging), false);
+        ignoreGroupSummaryNotifications = preferences.getBoolean(context.getString(R.string.pref_ignoreGroupSummaryNotifications), getResources().getBoolean(R.bool.pref_default_ignoreGroupSummaryNotifications));
+        forwardWithoutAndroidAuto = preferences.getBoolean(context.getString(R.string.pref_forwardWithoutAndroidAuto), getResources().getBoolean(R.bool.pref_default_forwardWithoutAndroidAuto));
+        debugLogging = preferences.getBoolean(context.getString(R.string.pref_debugLogging), getResources().getBoolean(R.bool.pref_default_debugLogging));
 
         // subscribe to Android Auto connection state
         autoConnectionListener = new AutoConnection();
