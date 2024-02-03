@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'xda.xlafbk.aanotificationforwarder'
-    compileSdkVersion 33
     defaultConfig {
         applicationId "xda.xlafbk.aanotificationforwarder"
         minSdkVersion 30
         targetSdkVersion 33
+        compileSdk 34
         versionCode 3
         versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -28,11 +28,11 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core:1.10.1'
+    implementation 'androidx.core:core:1.12.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "androidx.preference:preference:1.2.0"
+    implementation "androidx.preference:preference:1.2.1"
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.car.app:app:1.2.0'
     constraints {
