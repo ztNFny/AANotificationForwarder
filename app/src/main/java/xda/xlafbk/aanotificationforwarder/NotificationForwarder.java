@@ -112,8 +112,11 @@ public class NotificationForwarder extends NotificationListenerService {
         Notification notification = sbn.getNotification();
         Bundle bundle = notification.extras;
 
-        String title = bundle.getCharSequence("android.title").toString();
-        String text = bundle.containsKey("android.bigText") ? bundle.getCharSequence("android.bigText").toString() : bundle.getCharSequence("android.text", "").toString();
+        String title = bundle.getCharSequence("android.title", "").toString();
+        String text = bundle.getCharSequence("android.bigText", "").toString();
+        if ("".equals(text)) {
+            text = bundle.getCharSequence("android.text", "").toString();
+        }
 
         for (String ignoreString : ignoreNotificationTitle) {
             if (!ignoreString.isBlank() && title.contains(ignoreString)) {
