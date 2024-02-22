@@ -13,7 +13,16 @@
     <string name="status_disconnected">Disconnected from Android Auto</string>
     <string name="heading_settings">Settings</string>
     <string name="heading_settings_debug">Troubleshooting Settings</string>
-    <string name="about_text">Version: %1$s\n\nhttps://github.com/ztNFny/AANotificationForwarded</string>
+    <string name="about_text">Version: %1$s\nhttps://github.com/ztNFny/AANotificationForwarder</string>
+
+    <string name="pref_status_connection">pref_status_connection</string>
+    <string name="status_connection">AA Connection</string>
+    <string name="status_connection_true">Connected to Android Auto</string>
+    <string name="status_connection_false">Disconnected from Android Auto</string>
+    <string name="pref_status_notificationaccess">pref_status_notificationaccess</string>
+    <string name="status_notificationaccess">Notification access</string>
+    <string name="status_notificationaccess_true">Permission has been granted</string>
+    <string name="status_notificationaccess_false">Read Notifications permission not granted! Click here to grant it in Settings app.</string>
 
     <!-- Preferences -->
     <string name="pref_appsToForward">pref_appsToForward</string>
@@ -50,6 +59,12 @@
     <string name="pref_title_debugLogging">Debug logging</string>
     <string name="pref_summary_debugLogging">Enable debug logging to logcat.</string>
     <bool name="pref_default_debugLogging">false</bool>
+
+    <string name="pref_about_version">pref_about_version</string>
+    <string name="heading_settings_about">Info</string>
+    <string name="about_title_version">Version</string>
+    <string name="about_title_url">Website</string>
+    <string name="about_summary_url">https://github.com/ztNFny/AANotificationForwarder</string>
 
     <string-array name="empty" />
 </resources>

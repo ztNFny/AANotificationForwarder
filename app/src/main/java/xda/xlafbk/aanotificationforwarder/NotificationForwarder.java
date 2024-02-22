@@ -112,10 +112,16 @@ public class NotificationForwarder extends NotificationListenerService {
         Notification notification = sbn.getNotification();
         Bundle bundle = notification.extras;
 
-        String title = bundle.getCharSequence("android.title", "").toString();
-        String text = bundle.getCharSequence("android.bigText", "").toString();
+        String title = bundle.getCharSequence(Notification.EXTRA_TITLE, "").toString();
+        String text = bundle.getCharSequence(Notification.EXTRA_BIG_TEXT, "").toString();
         if ("".equals(text)) {
-            text = bundle.getCharSequence("android.text", "").toString();
+            text = bundle.getCharSequence(Notification.EXTRA_TEXT, "").toString();
+        }
+
+        if (debugLogging) {
+            for (String b : new String[] { Notification.EXTRA_SUB_TEXT, Notification.EXTRA_SUMMARY_TEXT, Notification.EXTRA_TEMPLATE, Notification.EXTRA_TEXT, Notification.EXTRA_TEXT_LINES, Notification.EXTRA_TITLE, Notification.EXTRA_TITLE_BIG, Notification.EXTRA_VERIFICATION_TEXT, Notification.EXTRA_BIG_TEXT, Notification.EXTRA_INFO_TEXT }) {
+                Log.d(TAG, "Bundle content - \"" + b + "\" : \"" + bundle.getCharSequence(b, "<null>").toString() + "\"");
+            }
         }
 
         for (String ignoreString : ignoreNotificationTitle) {
@@ -128,6 +134,7 @@ public class NotificationForwarder extends NotificationListenerService {
         // Get the best notification icon (large, small, default) and return it as bitmap
         Bitmap notificationIcon = NotificationHelper.getNotificationIconBitmap(context, notification);
 
+        if (debugLogging) Log.d(TAG, "Forwarding notification. App: \"" + sbn.getPackageName() + "\", ");
         NotificationHelper.sendCarNotification(context, title, text, null, notificationIcon, new Random().nextInt(100000));
 
         // cancel the original apps notification

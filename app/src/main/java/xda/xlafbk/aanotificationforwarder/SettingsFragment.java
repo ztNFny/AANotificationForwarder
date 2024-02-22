@@ -1,9 +1,11 @@
 package xda.xlafbk.aanotificationforwarder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
@@ -20,6 +22,36 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
+
+        CheckBoxPreference statusNotificationAccess = findPreference(getString(R.string.pref_status_notificationaccess));
+        statusNotificationAccess.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((Boolean) newValue) {
+                preference.setIcon(R.drawable.notification);
+                preference.setSummary(R.string.status_notificationaccess_true);
+                preference.setSelectable(false);
+            } else {
+                preference.setIcon(R.drawable.notification_important);
+                preference.setSummary(R.string.status_notificationaccess_false);
+                preference.setSelectable(true);
+                preference.setOnPreferenceClickListener(v -> {
+                    startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
+                    return true;
+                });
+            }
+            return true;
+        });
+
+        CheckBoxPreference statusConnection = findPreference(getString(R.string.pref_status_connection));
+        statusConnection.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((Boolean) newValue) {
+                preference.setIcon(R.drawable.car_ok);
+                preference.setSummary(R.string.status_connection_true);
+            } else {
+                preference.setIcon(R.drawable.car);
+                preference.setSummary(R.string.status_connection_false);
+            }
+            return true;
+        });
 
         installedApps = getInstalledApps(requireContext());
 
@@ -92,5 +124,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         });
         return appsMap;
+    }
+
+    protected void updateCheckboxPreference(int id, boolean newValue) {
+        CheckBoxPreference statusConnection = findPreference(getString(id));
+        statusConnection.setChecked(newValue);
+        statusConnection.callChangeListener(newValue);
     }
 }

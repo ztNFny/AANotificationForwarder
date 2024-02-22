@@ -4,16 +4,21 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -23,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String channelIdImportant = "aaNotificationForwarderImportant";
     private AutoConnectionDetector.OnCarConnectionStateListener autoConnectionListener;
     private AutoConnectionDetector autoDetector;
+    private SettingsFragment sf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.settings, new SettingsFragment()).commit();
+            sf = (SettingsFragment) getSupportFragmentManager().findFragmentById(R.id.settings);
         }
         try {
-            ((TextView)findViewById(R.id.versioninfo)).setText(getString(R.string.about_text, context.getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
+            sf.findPreference(getString(R.string.pref_about_version)).setSummary(context.getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
         } catch (PackageManager.NameNotFoundException e) {
             // version info isn't that important
         }
@@ -77,28 +83,18 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 0);
             }
         }
-        if (!NotificationManagerCompat.getEnabledListenerPackages(this).contains(getPackageName())) {
-            findViewById(R.id.permissionError).setVisibility(View.VISIBLE);
-            findViewById(R.id.permissionError).setOnClickListener(v -> startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")));
-        } else {
-            findViewById(R.id.permissionError).setVisibility(View.GONE);
-        }
+        sf.updateCheckboxPreference(R.string.pref_status_notificationaccess, NotificationManagerCompat.getEnabledListenerPackages(this).contains(getPackageName()));
     }
 
     private class AutoConnectionMain implements AutoConnectionDetector.OnCarConnectionStateListener {
         @Override
         public void onCarConnected() {
-            updateView(true);
+            sf.updateCheckboxPreference(R.string.pref_status_connection, true);
         }
 
         @Override
         public void onCarDisconnected() {
-            updateView(false);
+            sf.updateCheckboxPreference(R.string.pref_status_connection, false);
         }
-    }
-    
-    private void updateView(boolean isConnected) {
-        findViewById(R.id.connected).setVisibility(isConnected ? View.VISIBLE : View.GONE);
-        findViewById(R.id.disconnected).setVisibility(isConnected ? View.GONE : View.VISIBLE);
     }
 }

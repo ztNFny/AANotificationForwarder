@@ -2,7 +2,29 @@
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/heading_settings">
+        android:title="Status"
+        android:icon="@drawable/setup">
+
+        <CheckBoxPreference
+            android:key="@string/pref_status_notificationaccess"
+            android:title="@string/status_notificationaccess"
+            android:summary="@string/status_notificationaccess_false"
+            android:selectable="false"
+            android:persistent="false"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_status_connection"
+            android:title="@string/status_connection"
+            android:summary="@string/status_connection_false"
+            android:selectable="false"
+            android:persistent="false"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/heading_settings"
+        android:icon="@drawable/apps">
 
         <MultiSelectListPreference
             android:key="@string/pref_appsToForward"
@@ -35,7 +57,8 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/heading_settings_debug">
+        android:title="@string/heading_settings_debug"
+        android:icon="@drawable/troubleshoot">
 
         <SeekBarPreference
             android:key="@string/pref_dismissInterval"
@@ -57,5 +80,20 @@
             android:title="@string/pref_title_debugLogging"
             android:summary="@string/pref_summary_debugLogging"
             android:defaultValue="@bool/pref_default_debugLogging" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/heading_settings_about"
+        android:icon="@drawable/info">
+        <Preference
+            android:key="@string/pref_about_version"
+            android:title="@string/about_title_version" />
+        <Preference
+            android:title="@string/about_title_url"
+            android:summary="@string/about_summary_url">
+                <intent android:action="android.intent.action.VIEW"
+                    android:data="@string/about_summary_url" />
+        </Preference>
+
     </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

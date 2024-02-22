@@ -20,51 +20,18 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <TextView
-            android:id="@+id/permissionError"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:gravity="center"
-            android:textSize="@dimen/statustext"
-            android:text="@string/permission_error"
-            android:visibility="gone"
-            android:background="@color/status_error"/>
-        <TextView
-            android:id="@+id/connected"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:gravity="center"
-            android:textSize="@dimen/statustext"
-            android:visibility="gone"
-            android:text="@string/status_connected"
-            android:background="@color/status_connected"/>
-        <TextView
-            android:id="@+id/disconnected"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:gravity="center"
-            android:textSize="@dimen/statustext"
-            android:text="@string/status_disconnected"
-            android:background="@color/status_disconnected" />
-        <FrameLayout
+        <fragment
             android:id="@+id/settings"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <TextView
-            android:id="@+id/versioninfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="@dimen/infotext"
-            android:autoLink="web"
-            android:linksClickable="true"  />
+            android:name="xda.xlafbk.aanotificationforwarder.SettingsFragment"
+            android:layout_height="wrap_content" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
