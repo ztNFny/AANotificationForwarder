@@ -124,6 +124,11 @@ public class NotificationForwarder extends NotificationListenerService {
             }
         }
 
+        if ("".equals(title) && "".equals(text)) {
+            if (debugLogging) Log.d(TAG, "No text or title in notification");
+            return;
+        }
+
         for (String ignoreString : ignoreNotificationTitle) {
             if (!ignoreString.isBlank() && title.contains(ignoreString)) {
                 if (debugLogging) Log.d(TAG, "Ignore notification as it contains \"" + ignoreString + "\"");
@@ -134,7 +139,6 @@ public class NotificationForwarder extends NotificationListenerService {
         // Get the best notification icon (large, small, default) and return it as bitmap
         Bitmap notificationIcon = NotificationHelper.getNotificationIconBitmap(context, notification);
 
-        if (debugLogging) Log.d(TAG, "Forwarding notification. App: \"" + sbn.getPackageName() + "\", ");
         NotificationHelper.sendCarNotification(context, title, text, null, notificationIcon, new Random().nextInt(100000));
 
         // cancel the original apps notification
