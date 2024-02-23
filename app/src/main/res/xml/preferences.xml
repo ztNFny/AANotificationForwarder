@@ -11,7 +11,9 @@
             android:summary="@string/status_notificationaccess_false"
             android:selectable="false"
             android:persistent="false"
-            android:defaultValue="false" />
+            android:defaultValue="false">
+            <intent android:action="android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS" />
+        </CheckBoxPreference>
 
         <CheckBoxPreference
             android:key="@string/pref_status_connection"
@@ -48,7 +50,7 @@
             android:summary="@string/pref_summary_ignoreNotificationTitle"
             android:defaultValue="@string/pref_default_ignoreNotificationTitle" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="pref_ignoreGroupSummaryNotifications"
             android:title="@string/pref_title_ignoreGroupSummaryNotifications"
             android:summary="@string/pref_summary_ignoreGroupSummaryNotifications"
@@ -69,13 +71,13 @@
             android:defaultValue="@integer/pref_default_dismissInterval"
             app:showSeekBarValue="true" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="pref_forwardWithoutAndroidAuto"
             android:title="@string/pref_title_forwardWithoutAndroidAuto"
             android:summary="@string/pref_summary_forwardWithoutAndroidAuto"
             android:defaultValue="@bool/pref_default_forwardWithoutAndroidAuto" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="pref_debugLogging"
             android:title="@string/pref_title_debugLogging"
             android:summary="@string/pref_summary_debugLogging"

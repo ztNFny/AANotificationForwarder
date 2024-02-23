@@ -7,10 +7,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 
 import java.util.List;
 import java.util.Set;
@@ -25,7 +27,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         CheckBoxPreference statusNotificationAccess = findPreference(getString(R.string.pref_status_notificationaccess));
         statusNotificationAccess.setOnPreferenceChangeListener((preference, newValue) -> {
-            if ((Boolean) newValue) {
+            if (NotificationManagerCompat.getEnabledListenerPackages(getContext()).contains(getContext().getPackageName())) {
                 preference.setIcon(R.drawable.notification);
                 preference.setSummary(R.string.status_notificationaccess_true);
                 preference.setSelectable(false);
@@ -33,10 +35,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 preference.setIcon(R.drawable.notification_important);
                 preference.setSummary(R.string.status_notificationaccess_false);
                 preference.setSelectable(true);
-                preference.setOnPreferenceClickListener(v -> {
-                    startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
-                    return true;
-                });
             }
             return true;
         });
@@ -69,18 +67,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             NotificationForwarder.setIgnoreNotificationTitle((String) newValue);
             return true;
         });
-        CheckBoxPreference ignoreGroupSummaryNotifications = findPreference(getString(R.string.pref_ignoreGroupSummaryNotifications));
+        SwitchPreference ignoreGroupSummaryNotifications = findPreference(getString(R.string.pref_ignoreGroupSummaryNotifications));
         ignoreGroupSummaryNotifications.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setIgnoreGroupSummaryNotifications((Boolean) newValue);
             return true;
         });
 
-        CheckBoxPreference forwardWithoutAndroidAuto = findPreference(getString(R.string.pref_forwardWithoutAndroidAuto));
+        SwitchPreference forwardWithoutAndroidAuto = findPreference(getString(R.string.pref_forwardWithoutAndroidAuto));
         forwardWithoutAndroidAuto.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setForwardWithoutAndroidAuto((Boolean) newValue);
             return true;
         });
-        CheckBoxPreference debugLogging = findPreference(getString(R.string.pref_debugLogging));
+        SwitchPreference debugLogging = findPreference(getString(R.string.pref_debugLogging));
         debugLogging.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setDebugLogging((Boolean) newValue);
             return true;
