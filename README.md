@@ -13,7 +13,7 @@ Notifications by configured apps are re-sent by *AA Notification Forwarder* and 
 
 ### Download
 See [Releases](https://github.com/ztNFny/AANotificationForwarder/releases/).
-This will NOT be published on Google Play Store as sending non-messanger notifications to AA is not allowed.
+This will NOT be published on Google Play Store as sending non-messenger notifications to AA is not allowed.
 
 ### Installation
 On Android 13 sideloaded apps are not able to get notification access by default. Your options:
