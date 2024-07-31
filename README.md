@@ -25,6 +25,9 @@ On Android 13 sideloaded apps are not able to get notification access by default
     4. In the overflow menu (3 dots in upper right corner) select *Allow restricted settings*
     5. Enabling notification access should now work.
 
+### Limitations
+While a "Reply" button will be shown for every notification, the reply functionality doesn't (and will never) work. The button is inserted automatically by Android Auto and is required to make the notifications show up - making it work would however require code specific to each app that has its notifications forwarded.
+
 ### Contributions
 Contributions via PR / Issue are welcome
 
