@@ -102,6 +102,10 @@ public class NotificationForwarder extends NotificationListenerService {
         }
         // Has this already been forwarded?
         String sbnId = sbn.getKey() + "_" + sbn.getNotification().when;
+        if (autoConnectionListener.getAaConnectionEstablishedTimestamp() > sbn.getNotification().when) {
+            if (debugLogging) Log.d(TAG, "Message posted before connection");
+            return;
+        }
         if (forwardedNotifications.contains(sbnId)) {
             if (debugLogging) Log.d(TAG, "Already notified");
             return;
@@ -150,9 +154,12 @@ public class NotificationForwarder extends NotificationListenerService {
     public static class AutoConnection implements AutoConnectionDetector.OnCarConnectionStateListener {
         private boolean isConnected = false;
 
+        private long aaConnectionEstablishedTimestamp = 2000000000000L;
+
         @Override
         public void onCarConnected() {
             isConnected = true;
+            aaConnectionEstablishedTimestamp = System.currentTimeMillis();
         }
 
         @Override
@@ -162,6 +169,10 @@ public class NotificationForwarder extends NotificationListenerService {
 
         public boolean isConnected() {
             return isConnected;
+        }
+
+        public long getAaConnectionEstablishedTimestamp() {
+            return aaConnectionEstablishedTimestamp;
         }
     }
 }
