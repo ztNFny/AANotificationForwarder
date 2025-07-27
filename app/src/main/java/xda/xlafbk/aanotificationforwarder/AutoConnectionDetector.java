@@ -10,6 +10,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +64,7 @@ public class AutoConnectionDetector {
     }
 
     public void registerCarConnectionReceiver() {
-        context.registerReceiver(carConnectionReceiver, new IntentFilter(ACTION_CAR_CONNECTION_UPDATED));
+        ContextCompat.registerReceiver(context, carConnectionReceiver, new IntentFilter(ACTION_CAR_CONNECTION_UPDATED), ContextCompat.RECEIVER_NOT_EXPORTED);
         queryForState();
         Log.i(TAG, "registerCarConnectionReceiver: ");
     }

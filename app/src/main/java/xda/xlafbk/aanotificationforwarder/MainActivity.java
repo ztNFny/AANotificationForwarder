@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         autoDetector.setListener(autoConnectionListener);
         autoDetector.registerCarConnectionReceiver();
     }
+
     @Override
     protected void onResume() {
         super.onResume();

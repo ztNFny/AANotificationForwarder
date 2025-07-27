@@ -57,7 +57,7 @@
 
     <string name="pref_debugLogging">pref_debugLogging</string>
     <string name="pref_title_debugLogging">Debug logging</string>
-    <string name="pref_summary_debugLogging">Enable debug logging to logcat.</string>
+    <string name="pref_summary_debugLogging">Enable debug logging to /sdcard/Android/media/xda.xlafbk.aanotificationforwarder/.</string>
     <bool name="pref_default_debugLogging">false</bool>
 
     <string name="pref_about_version">pref_about_version</string>
