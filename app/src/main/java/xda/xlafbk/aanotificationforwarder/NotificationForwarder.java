@@ -1,6 +1,8 @@
 package xda.xlafbk.aanotificationforwarder;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 
+import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
 import java.text.Format;
@@ -21,14 +24,17 @@ import java.util.Random;
 import java.util.Set;
 
 public class NotificationForwarder extends NotificationListenerService {
-    private final List<String> forwardedNotifications = new ArrayList<>(10);
+    private static final String FOREGROUND_CHANNEL_ID = "aaNotificationForwarderForeground";
+    private static final int FOREGROUND_NOTIFICATION_ID = 1;
+    private static final int MAX_TRACKED_NOTIFICATIONS = 100;
+    private final List<String> forwardedNotifications = new ArrayList<>(MAX_TRACKED_NOTIFICATIONS);
     private static Set<String> appsToForward = new HashSet<>();
     private static Set<String> appsToDismiss = new HashSet<>();
     private static Set<String> ignoreNotificationTitle = new HashSet<>();
     private static boolean debugLogging;
-
     private static boolean forwardWithoutAndroidAuto;
     private static boolean ignoreGroupSummaryNotifications;
+
     private Context context;
     private long appStartTime;
     private AutoConnection autoConnectionListener;
@@ -46,40 +52,59 @@ public class NotificationForwarder extends NotificationListenerService {
         forwardWithoutAndroidAuto = preferences.getBoolean(context.getString(R.string.pref_forwardWithoutAndroidAuto), getResources().getBoolean(R.bool.pref_default_forwardWithoutAndroidAuto));
         debugLogging = preferences.getBoolean(context.getString(R.string.pref_debugLogging), getResources().getBoolean(R.bool.pref_default_debugLogging));
 
-        // init logger
         logger = new FileLogger(context, debugLogging);
-        
-        // subscribe to Android Auto connection state
+
+        // Register listener so CarConnectionReceiver's queries notify this service too,
+        // then query the current state immediately on start.
         autoConnectionListener = new AutoConnection();
-        AutoConnectionDetector autoDetector = new AutoConnectionDetector(this);
+        AutoConnectionDetector autoDetector = new AutoConnectionDetector(context);
         autoDetector.setListener(autoConnectionListener);
-        autoDetector.registerCarConnectionReceiver();
+        autoDetector.queryForState();
+
         appStartTime = System.currentTimeMillis();
+
+        createForegroundNotificationChannel();
     }
 
-    public static void setAppsToForward(Set<String> newValue) {
-        appsToForward = newValue;
+    @Override
+    public void onDestroy() {
+        // The listener lives in a static list; drop ours so a recreated service instance does not
+        // leave a stale listener behind that would call startForeground on a destroyed service.
+        if (autoConnectionListener != null) {
+            new AutoConnectionDetector(context).removeListener(autoConnectionListener);
+        }
+        super.onDestroy();
     }
 
-    public static void setAppsToDismiss(Set<String> newValue) {
-        appsToDismiss = newValue;
+    private void createForegroundNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(
+                FOREGROUND_CHANNEL_ID,
+                getString(R.string.foreground_channel_name),
+                NotificationManager.IMPORTANCE_LOW
+        );
+        getSystemService(NotificationManager.class).createNotificationChannel(channel);
     }
 
-    public static void setIgnoreNotificationTitle(String newValue) {
-        ignoreNotificationTitle = Set.of(newValue.split(","));
+    private void startForegroundService() {
+        Notification notification = new NotificationCompat.Builder(this, FOREGROUND_CHANNEL_ID)
+                .setContentTitle(getString(R.string.service_name))
+                .setContentText(getString(R.string.foreground_notification_text))
+                .setSmallIcon(R.drawable.icon_small)
+                .setOngoing(true)
+                .build();
+        startForeground(FOREGROUND_NOTIFICATION_ID, notification);
     }
 
-    public static void setDebugLogging(boolean newValue) {
-        debugLogging = newValue;
+    private void stopForegroundService() {
+        stopForeground(STOP_FOREGROUND_REMOVE);
     }
 
-    public static void setForwardWithoutAndroidAuto(boolean newValue) {
-        forwardWithoutAndroidAuto = newValue;
-    }
-
-    public static void setIgnoreGroupSummaryNotifications(boolean newValue) {
-        ignoreGroupSummaryNotifications = newValue;
-    }
+    public static void setAppsToForward(Set<String> newValue) { appsToForward = newValue; }
+    public static void setAppsToDismiss(Set<String> newValue) { appsToDismiss = newValue; }
+    public static void setIgnoreNotificationTitle(String newValue) { ignoreNotificationTitle = Set.of(newValue.split(",")); }
+    public static void setDebugLogging(boolean newValue) { debugLogging = newValue; }
+    public static void setForwardWithoutAndroidAuto(boolean newValue) { forwardWithoutAndroidAuto = newValue; }
+    public static void setIgnoreGroupSummaryNotifications(boolean newValue) { ignoreGroupSummaryNotifications = newValue; }
 
     @Override
     public void onListenerConnected() {
@@ -96,7 +121,7 @@ public class NotificationForwarder extends NotificationListenerService {
         super.onListenerDisconnected();
     }
 
-    public String convertTime(long time){
+    public String convertTime(long time) {
         Date date = new Date(time);
         Format format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(date);
@@ -108,7 +133,6 @@ public class NotificationForwarder extends NotificationListenerService {
         Bundle bundle = notification.extras;
 
         logger.log("================");
-        //for (String b : new String[] { Notification.EXTRA_SUB_TEXT, Notification.EXTRA_SUMMARY_TEXT, Notification.EXTRA_TEMPLATE, Notification.EXTRA_TEXT, Notification.EXTRA_TEXT_LINES, Notification.EXTRA_TITLE, Notification.EXTRA_TITLE_BIG, Notification.EXTRA_VERIFICATION_TEXT, Notification.EXTRA_BIG_TEXT, Notification.EXTRA_INFO_TEXT }) {
         for (String b : new String[] { Notification.EXTRA_TITLE, Notification.EXTRA_BIG_TEXT, Notification.EXTRA_TEXT }) {
             if (null != bundle.getCharSequence(b, null)) {
                 logger.log("Bundle content - \"%s\" : \"%s\"", b, bundle.getCharSequence(b, "<null>").toString());
@@ -135,6 +159,11 @@ public class NotificationForwarder extends NotificationListenerService {
             logger.log("Already notified");
             return;
         }
+        // Keep the de-duplication list bounded so it does not grow without limit over the
+        // lifetime of the long-running service.
+        if (forwardedNotifications.size() >= MAX_TRACKED_NOTIFICATIONS) {
+            forwardedNotifications.remove(0);
+        }
         forwardedNotifications.add(sbnId);
         // connected to Android Auto?
         if (!autoConnectionListener.isConnected() && !forwardWithoutAndroidAuto) {
@@ -153,7 +182,6 @@ public class NotificationForwarder extends NotificationListenerService {
         }
         logger.log("Notification will be forwarded: %s", sbnId);
 
-
         String title = bundle.getCharSequence(Notification.EXTRA_TITLE, "").toString();
         String text = bundle.getCharSequence(Notification.EXTRA_BIG_TEXT, "").toString();
         if (text.isEmpty()) {
@@ -167,7 +195,7 @@ public class NotificationForwarder extends NotificationListenerService {
 
         for (String ignoreString : ignoreNotificationTitle) {
             if (!ignoreString.isBlank() && title.contains(ignoreString)) {
-                logger.log("Ignore notification as it contains \"%s\"" , ignoreString);
+                logger.log("Ignore notification as it contains \"%s\"", ignoreString);
                 return;
             }
         }
@@ -175,7 +203,6 @@ public class NotificationForwarder extends NotificationListenerService {
         // Get the best notification icon (large, small, default) and return it as bitmap
         Bitmap notificationIcon = NotificationHelper.getNotificationIconBitmap(context, notification);
         logger.log("Forwarding notification");
-
         NotificationHelper.sendCarNotification(context, title, text, null, notificationIcon, new Random().nextInt(100000));
 
         // cancel the original apps notification
@@ -184,26 +211,29 @@ public class NotificationForwarder extends NotificationListenerService {
         }
     }
 
-    public static class AutoConnection implements AutoConnectionDetector.OnCarConnectionStateListener {
+    public class AutoConnection implements AutoConnectionDetector.OnCarConnectionStateListener {
         private boolean isConnected = false;
-
         private long aaConnectionEstablishedTimestamp = 2000000000000L;
 
         @Override
         public void onCarConnected() {
+            // Connection queries fire on every CAR_CONNECTION_UPDATED broadcast, we only want to react to the first one that indicates a connection.
+            if (isConnected) return;
             isConnected = true;
             aaConnectionEstablishedTimestamp = System.currentTimeMillis();
+            startForegroundService();
         }
 
         @Override
         public void onCarDisconnected() {
+            if (!isConnected) return;
             isConnected = false;
+            stopForegroundService();
         }
 
         public boolean isConnected() {
             return isConnected;
         }
-
         public long getAaConnectionEstablishedTimestamp() {
             return aaConnectionEstablishedTimestamp;
         }

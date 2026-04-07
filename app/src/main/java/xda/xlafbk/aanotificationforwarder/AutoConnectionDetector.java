@@ -18,33 +18,19 @@ import java.util.List;
 // Source: https://stackoverflow.com/a/75292070
 public class AutoConnectionDetector {
     private final Context context;
-    private static String TAG = "AutoConnectionDetector";
+    private static final String TAG = "AutoConnectionDetector";
+    private static final String CAR_CONNECTION_STATE = "CarConnectionState";
     private final CarConnectionBroadcastReceiver carConnectionReceiver = new CarConnectionBroadcastReceiver();
     private final CarConnectionQueryHandler carConnectionQueryHandler;
-    // columnName for provider to query on connection status
-    private static final String CAR_CONNECTION_STATE = "CarConnectionState";
-
+    private static final int CONNECTION_TYPE_NOT_CONNECTED = 0;
+    private static final int QUERY_TOKEN = 42;
+    private static final String CAR_CONNECTION_AUTHORITY = "androidx.car.app.connection";
     // auto app on your phone will send broadcast with this action when connection state changes
     private final String ACTION_CAR_CONNECTION_UPDATED = "androidx.car.app.connection.action.CAR_CONNECTION_UPDATED";
-
-    // phone is not connected to car
-    private static final int CONNECTION_TYPE_NOT_CONNECTED = 0;
-
-    // phone is connected to Automotive OS
-    private final int CONNECTION_TYPE_NATIVE = 1;
-
-    // phone is connected to Android Auto
-    private final int CONNECTION_TYPE_PROJECTION = 2;
-
-    private final int QUERY_TOKEN = 42;
-
-    private final String CAR_CONNECTION_AUTHORITY = "androidx.car.app.connection";
-
-    private final Uri PROJECTION_HOST_URI = new Uri.Builder().scheme("content").authority(CAR_CONNECTION_AUTHORITY).build();
+    private static final Uri PROJECTION_HOST_URI = new Uri.Builder().scheme("content").authority(CAR_CONNECTION_AUTHORITY).build();
 
     public interface OnCarConnectionStateListener {
         void onCarConnected();
-
         void onCarDisconnected();
     }
 
@@ -58,13 +44,8 @@ public class AutoConnectionDetector {
         listeners.remove(listener);
     }
 
-    public AutoConnectionDetector(Context context) {
-        this.context = context;
-        carConnectionQueryHandler = new CarConnectionQueryHandler(context.getContentResolver());
-    }
-
     public void registerCarConnectionReceiver() {
-        ContextCompat.registerReceiver(context, carConnectionReceiver, new IntentFilter(ACTION_CAR_CONNECTION_UPDATED), ContextCompat.RECEIVER_NOT_EXPORTED);
+        ContextCompat.registerReceiver(context, carConnectionReceiver, new IntentFilter(ACTION_CAR_CONNECTION_UPDATED), ContextCompat.RECEIVER_EXPORTED);
         queryForState();
         Log.i(TAG, "registerCarConnectionReceiver: ");
     }
@@ -74,29 +55,22 @@ public class AutoConnectionDetector {
         Log.i(TAG, "unRegisterCarConnectionReceiver: ");
     }
 
-    private void queryForState() {
-        String[] projection = {CAR_CONNECTION_STATE};
-        carConnectionQueryHandler.startQuery(
-                QUERY_TOKEN,
-                null,
-                PROJECTION_HOST_URI,
-                projection,
-                null,
-                null,
-                null
-        );
+    public AutoConnectionDetector(Context context) {
+        this.context = context;
+        carConnectionQueryHandler = new CarConnectionQueryHandler(context.getContentResolver());
     }
 
-    private static void notifyCarConnected() {
-        if (listeners != null) {
-            listeners.forEach(l -> { l.onCarConnected(); });
-        }
+    public void queryForState() {
+        carConnectionQueryHandler.startQuery(QUERY_TOKEN, null, PROJECTION_HOST_URI, new String[]{CAR_CONNECTION_STATE}, null, null, null);
+        Log.i(TAG, "queryForState");
     }
 
-    private static void notifyCarDisconnected() {
-        if (listeners != null) {
-            listeners.forEach(l -> { l.onCarDisconnected(); });
-        }
+    static void notifyCarConnected() {
+        if (listeners != null) listeners.forEach(OnCarConnectionStateListener::onCarConnected);
+    }
+
+    static void notifyCarDisconnected() {
+        if (listeners != null) listeners.forEach(OnCarConnectionStateListener::onCarDisconnected);
     }
 
     class CarConnectionBroadcastReceiver extends BroadcastReceiver {
@@ -115,29 +89,21 @@ public class AutoConnectionDetector {
         @Override
         protected void onQueryComplete(int token, Object cookie, Cursor response) {
             if (response == null) {
-                Log.w(TAG, "Null response from content provider when checking connection to the car, treating as disconnected");
+                Log.w(TAG, "Null response from content provider, treating as disconnected");
                 notifyCarDisconnected();
                 return;
             }
-            int carConnectionTypeColumn = response.getColumnIndex(CAR_CONNECTION_STATE);
-            if (carConnectionTypeColumn < 0) {
-                Log.w(TAG, "Connection to car response is missing the connection type, treating as disconnected");
+            int col = response.getColumnIndex(CAR_CONNECTION_STATE);
+            if (col < 0 || !response.moveToNext()) {
+                Log.w(TAG, "Invalid response from content provider, treating as disconnected");
                 notifyCarDisconnected();
                 return;
             }
-            if (!response.moveToNext()) {
-                Log.w(TAG, "Connection to car response is empty, treating as disconnected");
-                notifyCarDisconnected();
-                return;
-            }
-            int connectionState = response.getInt(carConnectionTypeColumn);
-
-            if (connectionState == CONNECTION_TYPE_NOT_CONNECTED) {
+            if (response.getInt(col) == CONNECTION_TYPE_NOT_CONNECTED) {
                 Log.i(TAG, "Android Auto disconnected");
                 notifyCarDisconnected();
             } else {
                 Log.i(TAG, "Android Auto connected");
-                Log.i(TAG, "onQueryComplete: " + connectionState);
                 notifyCarConnected();
             }
         }

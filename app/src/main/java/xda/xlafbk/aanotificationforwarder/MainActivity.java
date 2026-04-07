@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         autoDetector.removeListener(autoConnectionListener);
+        autoDetector.unRegisterCarConnectionReceiver();
     }
 
     private void checkPermissions() {

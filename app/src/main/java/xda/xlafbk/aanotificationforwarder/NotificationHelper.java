@@ -92,8 +92,7 @@ public class NotificationHelper {
         if (drawable == null) {
             return null;
         }
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
+        if (drawable instanceof BitmapDrawable bitmapDrawable) {
             return bitmapDrawable.getBitmap();
         } else {
             Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(),

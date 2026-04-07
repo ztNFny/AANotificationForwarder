@@ -26,8 +26,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         CheckBoxPreference statusNotificationAccess = findPreference(getString(R.string.pref_status_notificationaccess));
+        assert statusNotificationAccess != null;
         statusNotificationAccess.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (NotificationManagerCompat.getEnabledListenerPackages(getContext()).contains(getContext().getPackageName())) {
+            if (NotificationManagerCompat.getEnabledListenerPackages(requireContext()).contains(getContext().getPackageName())) {
                 preference.setIcon(R.drawable.notification);
                 preference.setSummary(R.string.status_notificationaccess_true);
                 preference.setSelectable(false);
@@ -40,6 +41,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         CheckBoxPreference statusConnection = findPreference(getString(R.string.pref_status_connection));
+        assert statusConnection != null;
         statusConnection.setOnPreferenceChangeListener((preference, newValue) -> {
             if ((Boolean) newValue) {
                 preference.setIcon(R.drawable.car_ok);
@@ -54,6 +56,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         installedApps = getInstalledApps(requireContext());
 
         MultiSelectListPreference appsToForward = findPreference(getString(R.string.pref_appsToForward));
+        assert appsToForward != null;
         appsToForward.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setAppsToForward((Set<String>)newValue);
             populateAppsToAutoDismissPref((Set<String>)newValue);
@@ -63,22 +66,26 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         populateAppsToAutoDismissPref(appsToForward.getValues());
 
         EditTextPreference ignoreNotificationTitle = findPreference(getString(R.string.pref_ignoreNotificationTitle));
+        assert ignoreNotificationTitle != null;
         ignoreNotificationTitle.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setIgnoreNotificationTitle((String) newValue);
             return true;
         });
         SwitchPreference ignoreGroupSummaryNotifications = findPreference(getString(R.string.pref_ignoreGroupSummaryNotifications));
+        assert ignoreGroupSummaryNotifications != null;
         ignoreGroupSummaryNotifications.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setIgnoreGroupSummaryNotifications((Boolean) newValue);
             return true;
         });
 
         SwitchPreference forwardWithoutAndroidAuto = findPreference(getString(R.string.pref_forwardWithoutAndroidAuto));
+        assert forwardWithoutAndroidAuto != null;
         forwardWithoutAndroidAuto.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setForwardWithoutAndroidAuto((Boolean) newValue);
             return true;
         });
         SwitchPreference debugLogging = findPreference(getString(R.string.pref_debugLogging));
+        assert debugLogging != null;
         debugLogging.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setDebugLogging((Boolean) newValue);
             return true;
@@ -88,6 +95,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void populateAppsToAutoDismissPref(Set<String> values) {
         MultiSelectListPreference appsToAutoDismiss = findPreference(getString(R.string.pref_appsAutoDismiss));
         TreeMap<String, String> selectedApps = getAppTitlesForPackageNames(installedApps, values);
+        assert appsToAutoDismiss != null;
         appsToAutoDismiss.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setAppsToDismiss((Set<String>)newValue);
             return true;
@@ -126,6 +134,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     protected void updateCheckboxPreference(int id, boolean newValue) {
         CheckBoxPreference statusConnection = findPreference(getString(id));
+        assert statusConnection != null;
         statusConnection.setChecked(newValue);
         statusConnection.callChangeListener(newValue);
     }

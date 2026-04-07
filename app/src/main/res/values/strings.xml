@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">AA Notification Forwarder</string>
     <string name="service_name">AA Notification Service</string>
+    <string name="foreground_channel_name">AA Notification Forwarder Service</string>
+    <string name="foreground_notification_text">Listening for notifications to forward to Android Auto</string>
 
     <!-- Test Notification -->
     <string name="test_notification_title">Test Notification</string>

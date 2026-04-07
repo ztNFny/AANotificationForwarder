@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -27,13 +29,25 @@
             android:name="NotificationForwarder"
             android:label="@string/service_name"
             android:exported="false"
+            android:foregroundServiceType="specialUse"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
             <meta-data android:name="android.service.notification.default_filter_types" android:value="ongoing|conversations|alerting|silent" />
             <meta-data android:name="android.service.notification.disabled_filter_types" android:value="" />
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps the notification listener alive to forward notifications to Android Auto" />
         </service>
+
+        <receiver
+            android:name="CarConnectionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.connection.action.CAR_CONNECTION_UPDATED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
