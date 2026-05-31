@@ -148,11 +148,11 @@ public class NotificationForwarder extends NotificationListenerService {
         String sbnId = sbn.getKey() + "_" + sbn.getNotification().when;
 
         if (notification.when < appStartTime) {
-            logger.log("Message posted before connection");
+            logger.log("Message posted before start");
             return;
         }
-        if (autoConnectionListener.getAaConnectionEstablishedTimestamp() > sbn.getNotification().when) {
-            logger.log("Message posted before connection2");
+        if (autoConnectionListener.getAaConnectionEstablishedTimestamp() > sbn.getNotification().when && !forwardWithoutAndroidAuto) {
+            logger.log("Message posted before connection");
             return;
         }
         if (forwardedNotifications.contains(sbnId)) {
