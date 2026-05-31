@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
@@ -52,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> NotificationHelper.sendCarNotification(view.getContext(), getString(R.string.test_notification_title), getString(R.string.test_notification_message), null, null, new Random().nextInt(100)));
 
+        // Handle window insets for edge-to-edge display (enforced for targetSdk 35+)
+        applyWindowInsets(fab);
+
         checkPermissions();
 
         // Prepare notification channels
@@ -77,6 +84,33 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         autoDetector.removeListener(autoConnectionListener);
         autoDetector.unRegisterCarConnectionReceiver();
+    }
+
+    private void applyWindowInsets(FloatingActionButton fab) {
+        // The app bar takes the top (status bar) inset plus any horizontal cutout insets.
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.appbar), (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(insets.left, insets.top, insets.right, v.getPaddingBottom());
+            return windowInsets;
+        });
+
+        // The settings content takes the horizontal and bottom (navigation bar) insets.
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content), (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(insets.left, v.getPaddingTop(), insets.right, insets.bottom);
+            return windowInsets;
+        });
+
+        // Keep the FAB clear of the navigation bar / cutout by adding the insets to its base margin.
+        final int baseMargin = ((ViewGroup.MarginLayoutParams) fab.getLayoutParams()).bottomMargin;
+        ViewCompat.setOnApplyWindowInsetsListener(fab, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            params.bottomMargin = baseMargin + insets.bottom;
+            params.rightMargin = baseMargin + insets.right;
+            v.setLayoutParams(params);
+            return windowInsets;
+        });
     }
 
     private void checkPermissions() {
