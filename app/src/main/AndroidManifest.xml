@@ -41,13 +41,6 @@
                 android:value="Keeps the notification listener alive to forward notifications to Android Auto" />
         </service>
 
-        <receiver
-            android:name="CarConnectionReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="androidx.car.app.connection.action.CAR_CONNECTION_UPDATED" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>
