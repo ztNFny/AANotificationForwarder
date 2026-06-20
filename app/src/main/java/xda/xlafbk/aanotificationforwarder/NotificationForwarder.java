@@ -3,7 +3,9 @@ package xda.xlafbk.aanotificationforwarder;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -38,6 +40,7 @@ public class NotificationForwarder extends NotificationListenerService {
     private Context context;
     private long appStartTime;
     private AutoConnection autoConnectionListener;
+    private AutoConnectionDetector autoDetector;
     private FileLogger logger;
 
     @Override
@@ -54,12 +57,10 @@ public class NotificationForwarder extends NotificationListenerService {
 
         logger = new FileLogger(context, debugLogging);
 
-        // Register listener so CarConnectionReceiver's queries notify this service too,
-        // then query the current state immediately on start.
         autoConnectionListener = new AutoConnection();
-        AutoConnectionDetector autoDetector = new AutoConnectionDetector(context);
+        autoDetector = new AutoConnectionDetector(context);
         autoDetector.setListener(autoConnectionListener);
-        autoDetector.queryForState();
+        autoDetector.registerCarConnectionReceiver();
 
         appStartTime = System.currentTimeMillis();
 
@@ -71,7 +72,8 @@ public class NotificationForwarder extends NotificationListenerService {
         // The listener lives in a static list; drop ours so a recreated service instance does not
         // leave a stale listener behind that would call startForeground on a destroyed service.
         if (autoConnectionListener != null) {
-            new AutoConnectionDetector(context).removeListener(autoConnectionListener);
+            autoDetector.removeListener(autoConnectionListener);
+            autoDetector.unRegisterCarConnectionReceiver();
         }
         super.onDestroy();
     }
@@ -86,11 +88,16 @@ public class NotificationForwarder extends NotificationListenerService {
     }
 
     private void startForegroundService() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
         Notification notification = new NotificationCompat.Builder(this, FOREGROUND_CHANNEL_ID)
                 .setContentTitle(getString(R.string.service_name))
                 .setContentText(getString(R.string.foreground_notification_text))
                 .setSmallIcon(R.drawable.icon_small)
                 .setOngoing(true)
+                .setContentIntent(pendingIntent)
                 .build();
         startForeground(FOREGROUND_NOTIFICATION_ID, notification);
     }
