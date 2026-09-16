@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.service.notification.NotificationListenerService.Ranking;
 
 import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
@@ -36,6 +37,7 @@ public class NotificationForwarder extends NotificationListenerService {
     private static boolean debugLogging;
     private static boolean forwardWithoutAndroidAuto;
     private static boolean ignoreGroupSummaryNotifications;
+    private static int minNotificationImportance;
 
     private Context context;
     private long appStartTime;
@@ -54,6 +56,7 @@ public class NotificationForwarder extends NotificationListenerService {
         ignoreGroupSummaryNotifications = preferences.getBoolean(context.getString(R.string.pref_ignoreGroupSummaryNotifications), getResources().getBoolean(R.bool.pref_default_ignoreGroupSummaryNotifications));
         forwardWithoutAndroidAuto = preferences.getBoolean(context.getString(R.string.pref_forwardWithoutAndroidAuto), getResources().getBoolean(R.bool.pref_default_forwardWithoutAndroidAuto));
         debugLogging = preferences.getBoolean(context.getString(R.string.pref_debugLogging), getResources().getBoolean(R.bool.pref_default_debugLogging));
+        minNotificationImportance = Integer.parseInt(preferences.getString(context.getString(R.string.pref_minNotificationImportance), context.getString(R.string.pref_default_minNotificationImportance)));
 
         logger = new FileLogger(context, debugLogging);
 
@@ -112,6 +115,7 @@ public class NotificationForwarder extends NotificationListenerService {
     public static void setDebugLogging(boolean newValue) { debugLogging = newValue; }
     public static void setForwardWithoutAndroidAuto(boolean newValue) { forwardWithoutAndroidAuto = newValue; }
     public static void setIgnoreGroupSummaryNotifications(boolean newValue) { ignoreGroupSummaryNotifications = newValue; }
+    public static void setMinNotificationImportance(String newValue) { minNotificationImportance = Integer.parseInt(newValue); }
 
     @Override
     public void onListenerConnected() {
@@ -148,6 +152,10 @@ public class NotificationForwarder extends NotificationListenerService {
         logger.log("When: %s", convertTime(notification.when));
         logger.log("getPostTime: %s", convertTime(sbn.getPostTime()));
         logger.log("getPackageName: %s", sbn.getPackageName());
+        Ranking ranking = new Ranking();
+        if (getCurrentRanking().getRanking(sbn.getKey(), ranking)) {
+            logger.log("importance: %s", String.valueOf(ranking.getImportance()));
+        }
         logger.log("appStartTime: %s", convertTime(appStartTime));
         logger.log("getAaConnectionEstablishedTimestamp: %s", convertTime(autoConnectionListener.getAaConnectionEstablishedTimestamp()));
 
@@ -187,7 +195,11 @@ public class NotificationForwarder extends NotificationListenerService {
             logger.log("Ignoring notification from non-forwarded app (%s)", sbn.getPackageName());
             return;
         }
-        logger.log("Notification will be forwarded: %s", sbnId);
+        // Importance filter
+        if (getCurrentRanking().getRanking(sbn.getKey(), ranking) && ranking.getImportance() < minNotificationImportance) {
+            logger.log("Ignoring notification below minimum importance (importance=%s, min=%s)", String.valueOf(ranking.getImportance()), String.valueOf(minNotificationImportance));
+            return;
+        }
 
         String title = bundle.getCharSequence(Notification.EXTRA_TITLE, "").toString();
         String text = bundle.getCharSequence(Notification.EXTRA_BIG_TEXT, "").toString();
@@ -209,7 +221,7 @@ public class NotificationForwarder extends NotificationListenerService {
 
         // Get the best notification icon (large, small, default) and return it as bitmap
         Bitmap notificationIcon = NotificationHelper.getNotificationIconBitmap(context, notification);
-        logger.log("Forwarding notification");
+        logger.log("Forwarding notification: %s", sbnId);
         NotificationHelper.sendCarNotification(context, title, text, null, notificationIcon, new Random().nextInt(100000));
 
         // cancel the original apps notification

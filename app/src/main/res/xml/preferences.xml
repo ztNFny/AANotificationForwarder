@@ -56,6 +56,14 @@
             android:summary="@string/pref_summary_ignoreGroupSummaryNotifications"
             android:defaultValue="@bool/pref_default_ignoreGroupSummaryNotifications" />
 
+        <ListPreference
+            android:key="@string/pref_minNotificationImportance"
+            android:title="@string/pref_title_minNotificationImportance"
+            android:entries="@array/pref_entries_minNotificationImportance"
+            android:entryValues="@array/pref_entryValues_minNotificationImportance"
+            android:defaultValue="@string/pref_default_minNotificationImportance"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

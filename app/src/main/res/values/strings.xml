@@ -47,6 +47,22 @@
     <string name="pref_summary_ignoreGroupSummaryNotifications">Some apps sent 2 notifications for 1 with the second being a group summary notification. Enable to ignore those in case you get duplicate notifications.</string>
     <bool name="pref_default_ignoreGroupSummaryNotifications">true</bool>
 
+    <string name="pref_minNotificationImportance">pref_minNotificationImportance</string>
+    <string name="pref_title_minNotificationImportance">Minimum notification importance</string>
+    <string name="pref_default_minNotificationImportance">1</string>
+    <string-array name="pref_entries_minNotificationImportance">
+        <item>All (including minimized)</item>
+        <item>Silent and above</item>
+        <item>Sound and above</item>
+        <item>Urgent only (heads-up)</item>
+    </string-array>
+    <string-array name="pref_entryValues_minNotificationImportance">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
     <string name="pref_schema_version">pref_schema_version</string>
     <string name="pref_ignoreNotificationTitle">pref_ignoreNotificationTitle</string>
     <string name="pref_title_ignoreNotificationTitle">Ignore notification titles</string>

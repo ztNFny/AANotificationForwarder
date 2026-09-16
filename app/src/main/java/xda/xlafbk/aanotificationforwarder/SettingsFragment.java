@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
@@ -85,6 +86,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         assert ignoreGroupSummaryNotifications != null;
         ignoreGroupSummaryNotifications.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setIgnoreGroupSummaryNotifications((Boolean) newValue);
+            return true;
+        });
+        ListPreference minNotificationImportance = findPreference(getString(R.string.pref_minNotificationImportance));
+        assert minNotificationImportance != null;
+        minNotificationImportance.setOnPreferenceChangeListener((preference, newValue) -> {
+            NotificationForwarder.setMinNotificationImportance((String) newValue);
             return true;
         });
 
