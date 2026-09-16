@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationManagerCompat;
@@ -13,6 +15,8 @@ import androidx.preference.EditTextPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
+
+import androidx.preference.PreferenceManager;
 
 import java.util.List;
 import java.util.Set;
@@ -67,6 +71,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         EditTextPreference ignoreNotificationTitle = findPreference(getString(R.string.pref_ignoreNotificationTitle));
         assert ignoreNotificationTitle != null;
+        migrateIgnoreNotificationTitleToNewlines(ignoreNotificationTitle);
+        ignoreNotificationTitle.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            editText.setMinLines(3);
+            editText.setGravity(Gravity.TOP | Gravity.START);
+        });
         ignoreNotificationTitle.setOnPreferenceChangeListener((preference, newValue) -> {
             NotificationForwarder.setIgnoreNotificationTitle((String) newValue);
             return true;
@@ -137,5 +147,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         assert statusConnection != null;
         statusConnection.setChecked(newValue);
         statusConnection.callChangeListener(newValue);
+    }
+
+    private static final int CURRENT_SCHEMA_VERSION = 2;
+
+    private void migrateIgnoreNotificationTitleToNewlines(EditTextPreference preference) {
+        android.content.SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        if (prefs.getInt(getString(R.string.pref_schema_version), 1) >= CURRENT_SCHEMA_VERSION) return;
+        String current = prefs.getString(getString(R.string.pref_ignoreNotificationTitle), null);
+        if (current != null && current.contains(",")) {
+            String migrated = current.replace(",", "\n");
+            prefs.edit().putString(getString(R.string.pref_ignoreNotificationTitle), migrated).apply();
+            preference.setText(migrated);
+            NotificationForwarder.setIgnoreNotificationTitle(migrated);
+        }
+        prefs.edit().putInt(getString(R.string.pref_schema_version), CURRENT_SCHEMA_VERSION).apply();
     }
 }

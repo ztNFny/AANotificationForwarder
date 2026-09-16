@@ -50,7 +50,7 @@ public class NotificationForwarder extends NotificationListenerService {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         appsToForward = preferences.getStringSet(context.getString(R.string.pref_appsToForward), new HashSet<>());
         appsToDismiss = preferences.getStringSet(context.getString(R.string.pref_appsAutoDismiss), new HashSet<>());
-        ignoreNotificationTitle = Set.of(preferences.getString(context.getString(R.string.pref_ignoreNotificationTitle), "").split(","));
+        ignoreNotificationTitle = Set.of(preferences.getString(context.getString(R.string.pref_ignoreNotificationTitle), "").split("\\r?\\n"));
         ignoreGroupSummaryNotifications = preferences.getBoolean(context.getString(R.string.pref_ignoreGroupSummaryNotifications), getResources().getBoolean(R.bool.pref_default_ignoreGroupSummaryNotifications));
         forwardWithoutAndroidAuto = preferences.getBoolean(context.getString(R.string.pref_forwardWithoutAndroidAuto), getResources().getBoolean(R.bool.pref_default_forwardWithoutAndroidAuto));
         debugLogging = preferences.getBoolean(context.getString(R.string.pref_debugLogging), getResources().getBoolean(R.bool.pref_default_debugLogging));
@@ -108,7 +108,7 @@ public class NotificationForwarder extends NotificationListenerService {
 
     public static void setAppsToForward(Set<String> newValue) { appsToForward = newValue; }
     public static void setAppsToDismiss(Set<String> newValue) { appsToDismiss = newValue; }
-    public static void setIgnoreNotificationTitle(String newValue) { ignoreNotificationTitle = Set.of(newValue.split(",")); }
+    public static void setIgnoreNotificationTitle(String newValue) { ignoreNotificationTitle = Set.of(newValue.split("\\r?\\n")); }
     public static void setDebugLogging(boolean newValue) { debugLogging = newValue; }
     public static void setForwardWithoutAndroidAuto(boolean newValue) { forwardWithoutAndroidAuto = newValue; }
     public static void setIgnoreGroupSummaryNotifications(boolean newValue) { ignoreGroupSummaryNotifications = newValue; }

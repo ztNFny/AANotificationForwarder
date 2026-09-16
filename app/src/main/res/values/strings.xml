@@ -47,10 +47,11 @@
     <string name="pref_summary_ignoreGroupSummaryNotifications">Some apps sent 2 notifications for 1 with the second being a group summary notification. Enable to ignore those in case you get duplicate notifications.</string>
     <bool name="pref_default_ignoreGroupSummaryNotifications">true</bool>
 
+    <string name="pref_schema_version">pref_schema_version</string>
     <string name="pref_ignoreNotificationTitle">pref_ignoreNotificationTitle</string>
     <string name="pref_title_ignoreNotificationTitle">Ignore notification titles</string>
-    <string name="pref_summary_ignoreNotificationTitle">Ignore notifications if their title contains one of the specified strings. "," to separate multiple texts.</string>
-    <string name="pref_default_ignoreNotificationTitle">First text to ignore,Second text to ignore,Checking Mail</string>
+    <string name="pref_summary_ignoreNotificationTitle">Ignore notifications if their title contains one of the specified strings. One entry per line.</string>
+    <string name="pref_default_ignoreNotificationTitle">First text to ignore\nSecond text to ignore\nChecking Mail</string>
 
     <string name="pref_forwardWithoutAndroidAuto">pref_forwardWithoutAndroidAuto</string>
     <string name="pref_title_forwardWithoutAndroidAuto">Forward without Android Auto connected</string>
